@@ -1,6 +1,5 @@
 import express from "express";
 import dotenv from "dotenv";
-import rateLimit from "express-rate-limit";
 import authRouter from "./routes/auth.routes.js";
 import isLoggedIn from "./middlewares/isLoggedIn.js";
 import cookieParser from "cookie-parser";
@@ -24,20 +23,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "126kb" }));
 app.use(cookieParser());
 
-const limiter = rateLimit({
-  max: 2,
-  windowMs: 60 * 60 * 1000,
-  message: "To many requiest from this IP, please try again after an hour",
-});
-
-app.use("", limiter);
-
 // HTTP Logger
 app.use(morgan("combined"));
 
 // API Documentation
 const swaggerDocument = YAML.load("./swagger.yaml");
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Auth Routes
 app.use("/api/v1/auth", authRouter);
