@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  title: Auth & Event API
+  version: 1.0.0
+  description: API documentation for authentication and event management system
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  /api/v1/auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: yourpassword123
+      responses:
+        "201":
+          description: User registered successfully
+        "400":
+          description: Bad input
+
+  /api/v1/auth/login:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: yourpassword123
+      responses:
+        "200":
+          description: User logged in
+        "401":
+          description: Unauthorized
+
+  /api/v1/auth/logout:
+    get:
+      summary: Logout user
+      responses:
+        "200":
+          description: User logged out
+
+  /api/v1/event/create:
+    post:
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, datetime, location, capacity]
+              properties:
+                title:
+                  type: string
+                  example: Tech Meetup
+                datetime:
+                  type: string
+                  format: date-time
+                  example: 2025-08-01T10:00:00Z
+                location:
+                  type: string
+                  example: Pune Auditorium
+                capacity:
+                  type: integer
+                  example: 150
+      responses:
+        "201":
+          description: Event created
+        "400":
+          description: Validation error
+
+  /api/v1/event/getAllEventDetails:
+    get:
+      summary: Get all events with registered users
+      responses:
+        "200":
+          description: List of all events with user details
+        "404":
+          description: No events found
+
+  /api/v1/event/getEventDetails/{eventId}:
+    get:
+      summary: Get single event details
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the event
+      responses:
+        "200":
+          description: Event details
+        "404":
+          description: Event not found
+
+  /api/v1/event/{eventId}/register:
+    post:
+      summary: Register user for an event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Registration successful
+        "400":
+          description: Registration error (capacity, date, etc.)
+        "409":
+          description: User already registered
+
+  /api/v1/event/{eventId}/cancel:
+    get:
+      summary: Cancel event registration
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Registration cancelled
+        "404":
+          description: Not registered
+
+  /api/v1/event/upcomingEvents:
+    get:
+      summary: Get all upcoming events
+      responses:
+        "200":
+          description: Upcoming event list
+
+  /api/v1/event/stats/{eventId}:
+    get:
+      summary: Get stats for an event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Event stats
+        "404":
+          description: Event not found
