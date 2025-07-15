@@ -4,6 +4,7 @@ import {
   getEventDetails,
   registerForEvent,
   cancelRegistration,
+  getUpCommingEvents,
 } from "../controllers/event.controller.js";
 import { Router } from "express";
 
@@ -14,5 +15,6 @@ router.get("/getAllEventDetails", getAllEventDetails);
 router.get("/getEventDetails/:eventId", getEventDetails);
 router.post("/:eventId/register", registerForEvent);
 router.get("/:eventId/cancel", cancelRegistration);
+router.get("/upcomingEvents", getUpCommingEvents);
 
 export default router;

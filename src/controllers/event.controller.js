@@ -102,10 +102,21 @@ const cancelRegistration = asyncHandler(async (req, res, next) => {
   res.json(new ApiResponce(200, null, "Registration cancelled"));
 });
 
+const getUpCommingEvents = asyncHandler(async (req, res) => {
+  const events = await sql`
+    SELECT * FROM events
+    WHERE datetime > NOW()
+    ORDER BY datetime ASC, location ASC;
+  `;
+
+  res.json(new ApiResponce(200, events));
+});
+
 export {
   createEvent,
   getAllEventDetails,
   getEventDetails,
   registerForEvent,
   cancelRegistration,
+  getUpCommingEvents,
 };
