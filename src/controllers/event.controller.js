@@ -112,6 +112,28 @@ const getUpCommingEvents = asyncHandler(async (req, res) => {
   res.json(new ApiResponce(200, events));
 });
 
+const getEventStats = asyncHandler(async (req, res) => {
+  const { eventId } = req.params;
+
+  const [event] = await sql`SELECT * FROM events WHERE id = ${eventId}`;
+  if (!event) return next(new ApiError(404, "Event not found"));
+
+  const [{ count }] = await sql`
+    SELECT COUNT(*)::int FROM event_registrations WHERE event_id = ${eventId};
+  `;
+
+  const remaining = event.capacity - count;
+  const percentage = ((count / event.capacity) * 100).toFixed(2);
+
+  res.json(
+    new ApiResponce(200, {
+      totalRegistrations: count,
+      remainingCapacity: remaining,
+      percentageUsed: `${percentage}%`,
+    })
+  );
+});
+
 export {
   createEvent,
   getAllEventDetails,
@@ -119,4 +141,5 @@ export {
   registerForEvent,
   cancelRegistration,
   getUpCommingEvents,
+  getEventStats,
 };
