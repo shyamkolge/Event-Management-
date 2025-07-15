@@ -24,7 +24,7 @@ const createEvent = asyncHandler(async (req, res, next) => {
 const getEventDetails = asyncHandler(async (req, res, next) => {
   const id = req.params.eventId;
 
-  const [event] = await sql`SELECT * FROM events WHERE id = ${id}`;
+  const event = await sql`SELECT * FROM events WHERE id = ${id}`;
   if (!event) return next(new ApiError(404, "Event not found"));
 
   const users = await sql`
@@ -38,16 +38,49 @@ const getEventDetails = asyncHandler(async (req, res, next) => {
 });
 
 const getAllEventDetails = asyncHandler(async (req, res, next) => {
-  const [event] = await sql`SELECT * FROM events`;
-  if (!event) return next(new ApiError(404, "Event not found"));
-
-  const users = await sql`
-    SELECT u.id, u.name, u.email
-    FROM event_registrations er
-    JOIN users u ON er.user_id = u.id
+  const rows = await sql`
+    SELECT 
+      e.id AS event_id,
+      e.title,
+      e.datetime,
+      e.location,
+      e.capacity,
+      u.id AS user_id,
+      u.name AS user_name,
+      u.email AS user_email
+    FROM events e
+    LEFT JOIN event_registrations er ON e.id = er.event_id
+    LEFT JOIN users u ON er.user_id = u.id
+    ORDER BY e.datetime ASC;
   `;
 
-  res.json(new ApiResponce(200, { ...event, registeredUsers: users }));
+  if (!rows.length) return next(new ApiError(404, "No events found"));
+
+  // Group by event_id
+  const eventsMap = new Map();
+
+  for (const row of rows) {
+    if (!eventsMap.has(row.event_id)) {
+      eventsMap.set(row.event_id, {
+        id: row.event_id,
+        title: row.title,
+        datetime: row.datetime,
+        location: row.location,
+        capacity: row.capacity,
+        registeredUsers: [],
+      });
+    }
+
+    if (row.user_id) {
+      eventsMap.get(row.event_id).registeredUsers.push({
+        id: row.user_id,
+        name: row.user_name,
+        email: row.user_email,
+      });
+    }
+  }
+
+  res.json(new ApiResponce(200, Array.from(eventsMap.values())));
 });
 
 const registerForEvent = asyncHandler(async (req, res, next) => {
