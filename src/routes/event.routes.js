@@ -1,3 +1,4 @@
+import { Router } from "express";
 import {
   createEvent,
   getAllEventDetails,
@@ -7,11 +8,12 @@ import {
   getUpCommingEvents,
   getEventStats,
 } from "../controllers/event.controller.js";
-import { Router } from "express";
+import validate from "../middlewares/validate.js";
+import { createEventSchema } from "../validators/event.validator.js";
 
 const router = Router();
 
-router.post("/create", createEvent);
+router.post("/create", validate(createEventSchema), createEvent);
 router.get("/getAllEventDetails", getAllEventDetails);
 router.get("/getEventDetails/:eventId", getEventDetails);
 router.post("/:eventId/register", registerForEvent);
