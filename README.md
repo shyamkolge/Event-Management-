@@ -32,8 +32,8 @@ Design and implement an Event Management System to test backend skills including
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/event-management-api.git
-cd event-management-api
+git clone https://github.com/shyamkolge/Event-Management-
+cd Event-Management-
 ```
 
 ### 2️⃣ Install Dependencies
