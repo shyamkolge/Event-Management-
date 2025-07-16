@@ -9,9 +9,10 @@ import swaggerUi from "swagger-ui-express";
 import morgan from "morgan";
 import YAML from "yamljs";
 import helmet from "helmet";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // Dotenv Configuration
-import path from "path";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 const app = express();
@@ -23,12 +24,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "126kb" }));
 app.use(cookieParser());
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // HTTP Logger
 app.use(morgan("combined"));
 
 // API Documentation
-const swaggerDocument = YAML.load("./swagger.yaml");
-app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// __dirname workaround for ES Modules
+// Load the YAML file
+const swaggerDocument = YAML.load(path.join(__dirname, "../swagger.yaml"));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Auth Routes
 app.use("/api/v1/auth", authRouter);
