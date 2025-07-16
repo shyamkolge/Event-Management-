@@ -47,7 +47,7 @@ Create a .env file in the root directory:
 PORT=3000
 NODE_ENV="production"
 JWT_SECRET=
-DATABASE_URL=
+DATABASE_URL= # Supabase postgrea url
 ```
 
 ### 4️⃣ Start PostgreSQL and Create Tables
