@@ -30,6 +30,17 @@ const __dirname = path.dirname(__filename);
 // HTTP Logger
 app.use(morgan("combined"));
 
+// View Engine Setup
+app.set("view engine", "ejs");
+app.use(express.static("public"));
+
+app.get("/", (req, res) => {
+  res.render("index", {
+    title: "Event Management API",
+    description: "API for managing events, users, and registrations.",
+  });
+});
+
 // API Documentation
 // __dirname workaround for ES Modules
 // Load the YAML file

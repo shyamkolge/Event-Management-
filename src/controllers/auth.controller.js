@@ -36,8 +36,13 @@ const register = asyncHandler(async (req, res, next) => {
   }
 
   const hashedPassword = await passwordHash(password);
+
   const [user] =
-    await sql`INSERT INTO users (name, email, password) VALUES (${name}, ${email}, ${hashedPassword}) RETURNING *`;
+    await sql`INSERT INTO users (name, email, password) VALUES (${name}, ${email}, ${hashedPassword}) RETURNING id, name, email, created_at`;
+
+  if (!user) {
+    return next(new ApiError(500, "User registration failed"));
+  }
 
   createSendToken(user, 201, "User created successfully", res);
 });

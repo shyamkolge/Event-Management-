@@ -7,7 +7,6 @@ let sql;
 
 try {
   const connectionString = process.env.DATABASE_URL;
-  console.log(connectionString);
   sql = postgres(connectionString);
   console.log("Connected to Supabase Postgres");
 } catch (error) {
